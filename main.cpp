@@ -102,16 +102,17 @@ void render()
     glRotatef(g_angle_x, 1.0f, 0.0f, 0.0f);
     glRotatef(g_angle_y, 0.0f, 1.0f, 0.0f);
 
-    // glLineWidth(1.0f);
-    // glColor3f(0.2f, 0.3f, 0.5f);
-    // for (World::sphere_array_t::const_iterator it = g_world->spheres.begin();
-    //      it != g_world->spheres.end(); ++it)
-    // {
-    //     glPushMatrix();
-    //     glTranslatef(it->origin.x, it->origin.y, it->origin.z);
-    //     glutWireSphere(it->r, 20, 20);
-    //     glPopMatrix();
-    // }
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glLineWidth(1.0f);
+    glColor3f(0.2f, 0.3f, 0.5f);
+    for (World::sphere_array_t::const_iterator it = g_world->spheres.begin();
+         it != g_world->spheres.end(); ++it)
+    {
+        glPushMatrix();
+        glTranslatef(it->origin.x, it->origin.y, it->origin.z);
+        glutSolidSphere(it->r, 20, 20);
+        glPopMatrix();
+    }
 
     g_cloth->draw();
 
