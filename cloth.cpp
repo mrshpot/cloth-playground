@@ -259,16 +259,17 @@ void Cloth::apply_sphere_constraints()
     for (World::sphere_array_t::const_iterator it = m_world.spheres.begin();
          it != m_world.spheres.end(); ++it)
     {
-        float r2 = it->r * it->r;
+        float r = it->r;
+        float r2 = r * r;
         
         for (size_t idx = 0; idx < m_num_points; ++idx)
         {
             Point &p = m_points[idx];
             float d = it->equ(p.pos);
-            if (d < r2)
+            if (d < 0)
             {
                 glm::vec3 v = p.pos - it->origin;
-                p.pos = (it->r / sqrtf(d)) * v + it->origin;
+                p.pos = (r / sqrtf(r2 + d)) * v + it->origin;
             }
         }
     }
