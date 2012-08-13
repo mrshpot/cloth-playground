@@ -132,6 +132,7 @@ void Cloth::draw()
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glPolygonOffset(0.0, -1.0);
     glDrawElements(GL_TRIANGLES, m_num_indices, GL_UNSIGNED_INT, 0);
+    glPolygonOffset(0.0, 0.0);
 
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
