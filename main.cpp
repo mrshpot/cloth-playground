@@ -16,6 +16,13 @@ Cloth *g_cloth = NULL;
 
 bool g_update = true;
 
+// mouse movement
+static const float angle_coeff = 0.4f;
+float g_angle_x = 30.0f;
+float g_angle_y = 0.0f;
+bool g_mouse_down = false;
+int g_mouse_ox, g_mouse_oy;
+
 // FPS counter stuff
 double g_last_fps_update = 0.0;
 size_t g_num_frames = 0;
@@ -54,6 +61,35 @@ void on_keyboard(unsigned char c, int, int)
     }
 }
 
+void on_mouse(int button, int state, int x, int y)
+{
+    if (button == GLUT_LEFT_BUTTON)
+    {
+        if (state == GLUT_UP)
+        {
+            g_mouse_down = false;
+        }
+        else if (state == GLUT_DOWN)
+        {
+            g_mouse_down = true;
+            g_mouse_ox = x;
+            g_mouse_oy = y;
+        }
+    }
+}
+
+void on_mouse_move(int x, int y)
+{
+    if (g_mouse_down)
+    {
+        g_angle_y += angle_coeff * (x - g_mouse_ox);
+        g_angle_x += angle_coeff * (y - g_mouse_oy);
+
+        g_mouse_ox = x;
+        g_mouse_oy = y;
+    }
+}
+
 void render()
 {
     glClearColor(0.0, 0.0, 0.1, 1.0);
@@ -63,8 +99,19 @@ void render()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glTranslatef(0.0f, 0.0f, -2.0f);
-    glRotatef(30.0f, 1.0f, 0.0f, 0.0f);
-    // glutWireTorus(0.2, 0.4, 10, 10);
+    glRotatef(g_angle_x, 1.0f, 0.0f, 0.0f);
+    glRotatef(g_angle_y, 0.0f, 1.0f, 0.0f);
+
+    // glLineWidth(1.0f);
+    // glColor3f(0.2f, 0.3f, 0.5f);
+    // for (World::sphere_array_t::const_iterator it = g_world->spheres.begin();
+    //      it != g_world->spheres.end(); ++it)
+    // {
+    //     glPushMatrix();
+    //     glTranslatef(it->origin.x, it->origin.y, it->origin.z);
+    //     glutWireSphere(it->r, 20, 20);
+    //     glPopMatrix();
+    // }
 
     g_cloth->draw();
 
@@ -137,7 +184,10 @@ int main(int argc, char *argv[])
     glutReshapeFunc(&reshape);
     glutDisplayFunc(&render);
     glutIdleFunc(&update);
+    
     glutKeyboardFunc(&on_keyboard);
+    glutMouseFunc(&on_mouse);
+    glutMotionFunc(&on_mouse_move);
 
     g_last_fps_update = ptime();
     
@@ -148,13 +198,13 @@ int main(int argc, char *argv[])
     REQUIRE_EXTENSION("GL_ARB_vertex_buffer_object");
 
     g_world = new World();
-    g_world->planes.push_back(mk_plane(glm::vec3(0.0f, -0.8f, 0.0f),
-                                       glm::vec3(-0.15f, -0.9f, 0.0f),
-                                       glm::vec3(0.0f, -0.9f, 0.1f)));
+    g_world->planes.push_back(mk_plane(glm::vec3(-1.0f, 0.5f, -1.0f),
+                                       glm::vec3(-1.0f, 0.5f, 1.0f),
+                                       glm::vec3(1.0f, -0.5f, 1.0f)));
 
-    /*g_world->planes.push_back(mk_plane(glm::vec3(0.0f, 0.0f, 0.0f),
-                                       glm::vec3(0.0f, 0.0f, 1.0f),
-                                       glm::vec3(1.0f, 0.0f, 0.0f)));*/
+    g_world->planes.push_back(mk_plane(glm::vec3(0.0f, -0.9f, 0.0f),
+                                       glm::vec3(0.0f, -0.9f, 1.0f),
+                                       glm::vec3(1.0f, -0.9f, 0.0f)));
 
     /*g_world->planes.push_back(mk_plane(glm::vec3(0.0f, 0.1f, 0.0f),
                                        glm::vec3(1.0f, 0.1f, 0.0f),
