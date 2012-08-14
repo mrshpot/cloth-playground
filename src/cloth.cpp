@@ -74,7 +74,6 @@ Cloth::Cloth(float width, float height, size_t rows, size_t cols, const World &w
     
     m_num_points = rows * cols;
     m_points = new Point[m_num_points];
-    m_tmp_points = new Point[m_num_points];
     m_prev_points = new Point[m_num_points];
 
     float width_half = width * 0.5f;
@@ -106,7 +105,6 @@ Cloth::~Cloth()
     glDeleteBuffersARB(1, &m_ibo);
     
     delete[] m_points;
-    delete[] m_tmp_points;
     delete[] m_prev_points;
 }
 
@@ -223,13 +221,6 @@ void Cloth::gen_indices()
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 
     delete[] indices;
-}
-
-void Cloth::swap_arrays()
-{
-    Point *tmp = m_points;
-    m_points = m_tmp_points;
-    m_tmp_points = tmp;
 }
 
 void Cloth::fill_prev_with_current()

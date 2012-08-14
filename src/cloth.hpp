@@ -22,7 +22,7 @@ struct Point
 
 class Cloth
 {
-    Point *m_points, *m_tmp_points, *m_prev_points;
+    Point *m_points, *m_prev_points;
     unsigned int m_vbo, m_ibo;
     bool m_locked;
     float m_prev_dt;
@@ -55,7 +55,6 @@ public:
 private:
     void upload();
     void gen_indices();
-    void swap_arrays();
     void fill_prev_with_current();
 
     void apply_plane_constraints();
