@@ -244,21 +244,19 @@ int main(int argc, char *argv[])
     REQUIRE_EXTENSION("GL_ARB_vertex_buffer_object");
 
     g_world = new World();
-    /*g_world->planes.push_back(mk_plane(glm::vec3(-1.0f, 0.5f, -1.0f),
-                                       glm::vec3(-1.0f, 0.5f, 1.0f),
-                                       glm::vec3(1.0f, -0.5f, 1.0f)));*/
+    /*g_world->planes.push_back(Plane(glm::vec3(-1.0f, 0.5f, -1.0f),
+                                    glm::vec3(-1.0f, 0.5f, 1.0f),
+                                    glm::vec3(1.0f, -0.5f, 1.0f)));*/
 
-    g_world->planes.push_back(mk_plane(glm::vec3(0.0f, -0.9f, 0.0f),
-                                       glm::vec3(0.0f, -0.9f, 1.0f),
-                                       glm::vec3(1.0f, -0.9f, 0.0f)));
+    g_world->planes.push_back(Plane(glm::vec3(0.0f, -0.9f, 0.0f),
+                                    glm::vec3(0.0f, -0.9f, 1.0f),
+                                    glm::vec3(1.0f, -0.9f, 0.0f)));
 
-    /*g_world->planes.push_back(mk_plane(glm::vec3(0.0f, 0.1f, 0.0f),
-                                       glm::vec3(1.0f, 0.1f, 0.0f),
-                                       glm::vec3(0.0f, 0.1f, 1.0f)));*/
+    /*g_world->planes.push_back(Plane(glm::vec3(0.0f, 0.1f, 0.0f),
+                                    glm::vec3(1.0f, 0.1f, 0.0f),
+                                    glm::vec3(0.0f, 0.1f, 1.0f)));*/
     
-    Sphere tmp_sphere;
-    tmp_sphere.origin = glm::vec3(0.0f, -0.5f, 0.1f);
-    tmp_sphere.r = 0.4f;
+    Sphere tmp_sphere(glm::vec3(0.0f, -0.5f, 0.1f), 0.4f);
     g_world->spheres.push_back(tmp_sphere);
     g_world->spheres.push_back(tmp_sphere); // two spheres
 

@@ -20,6 +20,18 @@ struct Sphere
     glm::vec3 origin;
     float r;
 
+    Sphere(const glm::vec3 &origin, float r)
+        : origin(origin)
+        , r(r)
+    {
+    }
+
+    Sphere(const Sphere &other)
+        : origin(other.origin)
+        , r(other.r)
+    {
+    }
+    
     float equ(const glm::vec3 &x) const
     {
         glm::vec3 v = x - origin;
@@ -32,8 +44,33 @@ struct Plane
     glm::vec3 n;
     float d;
 
+    Plane(const glm::vec3 &n, float d)
+        : n(glm::normalize(n))
+        , d(d)
+    {
+    }
+
+    /// Compute the equation coefficients from three points in CCW order
+    Plane(const glm::vec3 &p1, const glm::vec3 &p2, const glm::vec3 &p3)
+    {
+        glm::vec3 v1 = p2 - p1;
+        glm::vec3 v2 = p3 - p1;
+        
+        n = glm::normalize(glm::cross(v1, v2));
+        d = 0;
+        d = -equ(p1); // should work with any point on the plane
+    }
+    
+    Plane(const Plane &other)
+        : n(other.n)
+        , d(other.d)
+    {
+    }
+    
     float equ(const glm::vec3 &x) const
     {
+        // Equation: Ax + By + Cz + D = 0;
+        // (A, B, C) (normalized) are stored in n; D is stored in d.
         return glm::dot(n, x) + d;
     }
 };
@@ -47,7 +84,6 @@ struct World
     plane_array_t planes;
 };
 
-/// For a CCW triangle, compute plane equation coefficients
 Plane mk_plane(const glm::vec3 &p1, const glm::vec3 &p2, const glm::vec3 &p3);
 
 #endif // WORLD_HPP__INCLUDED
