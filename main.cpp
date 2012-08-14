@@ -103,7 +103,6 @@ static void do_render(bool alt_color)
     } else {
         glColor3f(0.2f, 0.3f, 0.5f);
     }
-        
     for (World::sphere_array_t::const_iterator it = g_world->spheres.begin();
          it != g_world->spheres.end(); ++it)
     {
@@ -116,7 +115,7 @@ static void do_render(bool alt_color)
     if (!alt_color) {
         glColor3f(0.4f, 0.7f, 0.8f);
     } else {
-        glColor3f(0.9f, 0.4f, 0.6f);
+        glColor3f(0.75f, 0.3f, 0.25f);
     }
     g_cloth->draw();
 }
@@ -133,7 +132,7 @@ void render()
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glPolygonOffset(-1.0, -1.0);
-    glLineWidth(3.0f);
+    glLineWidth(2.0f);
     do_render(true);
 
     glutSwapBuffers();
@@ -162,7 +161,7 @@ void update()
 
     // moving spheres
     static float sphere_angle = 0.0f;
-    static float sphere_r = 0.4f;
+    static float sphere_r = 0.1f;
     static bool expanding = true;
     static const float min_r = 0.4f;
     static const float max_r = 1.2f;
@@ -254,7 +253,7 @@ int main(int argc, char *argv[])
     g_world->spheres.push_back(tmp_sphere);
     g_world->spheres.push_back(tmp_sphere); // two spheres
 
-    g_cloth = new Cloth(2.0f, 2.0f, 50, 50, *g_world);
+    g_cloth = new Cloth(2.0f, 2.0f, 32, 32, *g_world);
 
     glutMainLoop();
 
