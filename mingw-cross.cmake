@@ -1,11 +1,11 @@
 # Origin: http://blog.beuc.net/posts/Cross-compiling_with_CMake/
 
-SET(CMAKE_SYSTEM_NAME Windows)
+set(CMAKE_SYSTEM_NAME Windows)
 include(CMakeForceCompiler)
-IF("${GNU_HOST}" STREQUAL "")
-  SET(GNU_HOST i486-mingw32)
-ENDIF()
+if("${GNU_HOST}" STREQUAL "")
+  set(GNU_HOST i486-mingw32)
+endif()
 
-CMAKE_FORCE_C_COMPILER(${GNU_HOST}-gcc GNU)
-CMAKE_FORCE_CXX_COMPILER(${GNU_HOST}-g++ GNU)
-SET(CMAKE_RC_COMPILER ${GNU_HOST}-windres)
+cmake_force_c_compiler(${GNU_HOST}-gcc GNU)
+cmake_force_cxx_compiler(${GNU_HOST}-g++ GNU)
+set(CMAKE_RC_COMPILER ${GNU_HOST}-windres)
