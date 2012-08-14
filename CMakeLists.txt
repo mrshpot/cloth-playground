@@ -16,7 +16,7 @@ ELSE()
 ENDIF()
   
 
-configure_file(./src/platform.hpp.in ./src/platform.hpp)
+configure_file(src/platform.hpp.in src/platform.hpp)
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/src")
 add_executable(${TARGET}
   src/main.cpp src/cloth.cpp src/w32_time.cpp src/posix_time.cpp)
