@@ -1,0 +1,9 @@
+#ifndef PLATFORM_HPP__INCLUDED
+#define PLATFORM_HPP__INCLUDED
+
+
+#cmakedefine PLATFORM_POSIX
+#cmakedefine PLATFORM_WINDOWS
+
+
+#endif // PLATFORM_HPP__INCLUDED

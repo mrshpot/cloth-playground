@@ -16,6 +16,7 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 
+#include "time.hpp"
 #include "cloth.hpp"
 #include "world.hpp"
 
@@ -37,13 +38,6 @@ double g_last_fps_update = 0.0;
 size_t g_num_frames = 0;
 static const double update_interval = 1.0;
 const char *title_format = "Cloth, %f fps";
-
-double ptime()
-{
-    struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
-    return (double)ts.tv_sec + (double)ts.tv_nsec * 1e-9;
-}
 
 void update_fps()
 {

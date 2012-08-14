@@ -3,7 +3,9 @@
 set -e
 cd `dirname $0`
 
-mkdir -p build
-cd build
+dst=build
+mkdir -p "$dst"
+cd "$dst"
+
 cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
 make
