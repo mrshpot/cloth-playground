@@ -41,6 +41,8 @@ public:
 
     void lock();
     void unlock();
+
+    void reset_velocity();
     
     Point& at(int i, int j) { return m_points[i * m_cols + j]; }
     void draw();
@@ -55,7 +57,7 @@ public:
 private:
     void upload();
     void gen_indices();
-    void fill_prev_with_current();
+    void copy_current_to_prev();
 
     void apply_plane_constraints();
     void apply_sphere_constraints();

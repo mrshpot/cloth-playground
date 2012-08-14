@@ -56,11 +56,46 @@ void update_fps()
     }
 }
 
+void reset()
+{
+    Cloth &c = *g_cloth;
+    c.lock();
+
+    size_t rows = c.rows();
+    size_t cols = c.cols();
+    float width = c.width();
+    float height = c.height();
+    float width_half = width * 0.5f;
+    float height_half = height * 0.5f;
+    
+    for (size_t i = 0; i < rows; ++i)
+    {
+        float fi = (float)i / (rows - 1);
+        
+        for (size_t j = 0; j < cols; ++j)
+        {
+            float fj = (float)j / (cols - 1);
+
+            glm::vec3 &p = c.at(i, j).pos;
+            p.x = fi * height - height_half;
+            p.y = 1.0f;
+            p.z = fj * width - width_half;
+        }
+    }
+
+    c.unlock();
+    c.reset_velocity();
+}
+
 void on_keyboard(unsigned char c, int, int)
 {
     if (c == ' ')
     {
         g_update = !g_update;
+    }
+    else if (c == 'r')
+    {
+        reset();
     }
 }
 
@@ -255,6 +290,7 @@ int main(int argc, char *argv[])
     g_world->spheres.push_back(tmp_sphere); // two spheres
 
     g_cloth = new Cloth(2.0f, 2.0f, 32, 32, *g_world);
+    reset();
 
     glutMainLoop();
 

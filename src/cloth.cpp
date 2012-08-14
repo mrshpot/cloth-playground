@@ -10,6 +10,8 @@
 #include <cassert>
 #include <cstdio>
 #include <cmath>
+#include <cstring>
+#include <algorithm>
 
 #include <GL/glew.h>
 #include <GL/gl.h>
@@ -76,26 +78,10 @@ Cloth::Cloth(float width, float height, size_t rows, size_t cols, const World &w
     m_points = new Point[m_num_points];
     m_prev_points = new Point[m_num_points];
 
-    float width_half = width * 0.5f;
-    float height_half = height * 0.5f;
-    
-    for (size_t i = 0; i < rows; ++i)
-    {
-        float fi = (float)i / (rows - 1);
-        
-        for (size_t j = 0; j < cols; ++j)
-        {
-            float fj = (float)j / (cols - 1);
-            
-            m_points[i * cols + j].pos = \
-                glm::vec3(fi * m_height - height_half,
-                          1.0f,
-                          fj * m_width - width_half);
-        }
-    }
-    
+    memset(m_points, m_num_points * sizeof(m_points[0]), 0);
+    memset(m_prev_points, m_num_points * sizeof(m_points[0]), 0);
+
     gen_indices();
-    fill_prev_with_current();
     upload();
 }
 
@@ -121,6 +107,11 @@ void Cloth::unlock()
     upload();
 }
 
+void Cloth::reset_velocity()
+{
+    copy_current_to_prev();
+}
+
 void Cloth::draw()
 {
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_vbo);
@@ -144,6 +135,9 @@ void Cloth::draw()
 
 void Cloth::step(float dt)
 {
+    // Time-corrected Verlet integration as described in:
+    // http://lonesock.net/article/verlet.html
+    
     if (m_prev_dt < 0)
         m_prev_dt = dt;
     
@@ -223,12 +217,9 @@ void Cloth::gen_indices()
     delete[] indices;
 }
 
-void Cloth::fill_prev_with_current()
+void Cloth::copy_current_to_prev()
 {
-    for (size_t idx = 0; idx < m_num_points; ++idx)
-    {
-        m_prev_points[idx] = m_points[idx];
-    }
+    std::copy(m_points, m_points + m_num_points, m_prev_points);
 }
 
 void Cloth::apply_plane_constraints()
