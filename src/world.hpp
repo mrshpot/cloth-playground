@@ -34,6 +34,8 @@ struct Sphere
     
     float equ(const glm::vec3 &x) const
     {
+        // Equation: (x - Ox)^2 + (y - Oy) ^2 + (z - Oz) ^2 = R^2;
+        // (Ox, Oy, Oz) are stored in origin; R is stored in r.
         glm::vec3 v = x - origin;
         return glm::dot(v, v) - (r * r);
     }
@@ -83,7 +85,5 @@ struct World
     sphere_array_t spheres;
     plane_array_t planes;
 };
-
-Plane mk_plane(const glm::vec3 &p1, const glm::vec3 &p2, const glm::vec3 &p3);
 
 #endif // WORLD_HPP__INCLUDED
