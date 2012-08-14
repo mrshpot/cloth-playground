@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include <time.h>
-#include <math.h>
+#include <cstdio>
+#include <ctime>
+#include <cmath>
 
 #include <GL/glew.h>
 #include <GL/gl.h>
@@ -90,21 +90,20 @@ void on_mouse_move(int x, int y)
     }
 }
 
-void render()
+static void do_render(bool alt_color)
 {
-    glClearColor(0.0, 0.0, 0.1, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
-
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glTranslatef(0.0f, 0.0f, -2.0f);
     glRotatef(g_angle_x, 1.0f, 0.0f, 0.0f);
     glRotatef(g_angle_y, 0.0f, 1.0f, 0.0f);
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glLineWidth(1.0f);
-    glColor3f(0.2f, 0.3f, 0.5f);
+    if (!alt_color) {
+        glColor3f(0.3f, 0.4f, 0.7f);
+    } else {
+        glColor3f(0.2f, 0.3f, 0.5f);
+    }
+        
     for (World::sphere_array_t::const_iterator it = g_world->spheres.begin();
          it != g_world->spheres.end(); ++it)
     {
@@ -114,7 +113,28 @@ void render()
         glPopMatrix();
     }
 
+    if (!alt_color) {
+        glColor3f(0.4f, 0.7f, 0.8f);
+    } else {
+        glColor3f(0.9f, 0.4f, 0.6f);
+    }
     g_cloth->draw();
+}
+
+void render()
+{
+    glClearColor(0.0, 0.0, 0.1, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+
+    glPolygonOffset(0.0, 0.0);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    do_render(false);
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonOffset(-1.0, -1.0);
+    glLineWidth(3.0f);
+    do_render(true);
 
     glutSwapBuffers();
 
@@ -139,29 +159,46 @@ void reshape(int width, int height)
 void update()
 {
     double t = ptime();
-    
-    // float width = g_cloth->width();
-    // float height = g_cloth->height();
-    // size_t rows = g_cloth->rows();
-    // size_t cols = g_cloth->cols();
-    
-    // float width_half = width * 0.5f,
-    //     height_half = height * 0.5f;
-    // g_cloth->lock();
-    // for (size_t i = 0; i < rows; ++i)
-    // {
-    //     for (size_t j = 0; j < cols; ++j)
-    //     {
-    //         g_cloth->at(i, j).pos =
-    //             glm::vec3(width * j / (cols - 1) - width_half + 0.1 * cos(3.2 * (double)j / (cols - 1) + 1.1 * t),
-    //                       height * i / (rows - 1) - height_half,
-    //                       0.0f + 0.15 * sin(2.4 * (double)i / (rows - 1) + 2.1 * t));
-    //     }
-    // }
-    // g_cloth->unlock();
 
+    // moving spheres
+    static float sphere_angle = 0.0f;
+    static float sphere_r = 0.4f;
+    static bool expanding = true;
+    static const float min_r = 0.4f;
+    static const float max_r = 1.2f;
+    static const float sphere_angle_step = 0.04f;
+    static const float sphere_r_step= 0.002f;
+
+    assert(g_world->spheres.size() >= 2);
+    Sphere &sph1 = g_world->spheres[0];
+    Sphere &sph2 = g_world->spheres[1];
+    
     if (g_update)
     {
+        sph1.origin.x = sin(sphere_angle) * sphere_r;
+        sph1.origin.z = cos(sphere_angle) * sphere_r;
+        sph2.origin.x = sin(sphere_angle + M_PI) * sphere_r;
+        sph2.origin.z = cos(sphere_angle + M_PI) * sphere_r;
+
+        sphere_angle += sphere_angle_step;
+        while (sphere_angle >= 2 * M_PI) {
+            sphere_angle -= (2 * M_PI);
+        }
+        
+        if (expanding) {
+            sphere_r += sphere_r_step;
+            if (sphere_r >= max_r) {
+                expanding = false;
+            }
+        }
+        else
+        {
+            sphere_r -= sphere_r_step;
+            if (sphere_r <= min_r) {
+                expanding = true;
+            }
+        }
+        
         g_cloth->step(0.01f);
     }
     
@@ -199,9 +236,9 @@ int main(int argc, char *argv[])
     REQUIRE_EXTENSION("GL_ARB_vertex_buffer_object");
 
     g_world = new World();
-    g_world->planes.push_back(mk_plane(glm::vec3(-1.0f, 0.5f, -1.0f),
+    /*g_world->planes.push_back(mk_plane(glm::vec3(-1.0f, 0.5f, -1.0f),
                                        glm::vec3(-1.0f, 0.5f, 1.0f),
-                                       glm::vec3(1.0f, -0.5f, 1.0f)));
+                                       glm::vec3(1.0f, -0.5f, 1.0f)));*/
 
     g_world->planes.push_back(mk_plane(glm::vec3(0.0f, -0.9f, 0.0f),
                                        glm::vec3(0.0f, -0.9f, 1.0f),
@@ -213,8 +250,9 @@ int main(int argc, char *argv[])
     
     Sphere tmp_sphere;
     tmp_sphere.origin = glm::vec3(0.0f, -0.5f, 0.1f);
-    tmp_sphere.r = 0.7f;
+    tmp_sphere.r = 0.4f;
     g_world->spheres.push_back(tmp_sphere);
+    g_world->spheres.push_back(tmp_sphere); // two spheres
 
     g_cloth = new Cloth(2.0f, 2.0f, 50, 50, *g_world);
 

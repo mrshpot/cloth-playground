@@ -123,17 +123,8 @@ void Cloth::draw()
                     (GLvoid*)offsetof(Point, pos));
     glIndexPointer(GL_UNSIGNED_INT, sizeof(GLuint), (GLvoid*)NULL);
 
-    glColor3f(0.4f, 0.7f, 0.8f);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDrawElements(GL_TRIANGLES, m_num_indices, GL_UNSIGNED_INT, NULL);
     
-    glLineWidth(3.0f);
-    glColor3f(0.9f, 0.4f, 0.6f);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glPolygonOffset(0.0, -1.0);
-    glDrawElements(GL_TRIANGLES, m_num_indices, GL_UNSIGNED_INT, 0);
-    glPolygonOffset(0.0, 0.0);
-
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
     
