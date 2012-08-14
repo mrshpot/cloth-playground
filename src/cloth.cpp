@@ -45,7 +45,8 @@ const char* gl_error_str(GLenum error)
 #define CHECK_GL_ERROR()                                                \
     do {                                                                \
         GLenum tmp__error = glGetError();                               \
-        if (tmp__error != GL_NO_ERROR) {                                \
+        if (tmp__error != GL_NO_ERROR)                                  \
+        {                                                               \
             fprintf(stderr, "OpenGL error %d: %s", gl_error_str(tmp__error)); \
             assert(tmp__error == GL_NO_ERROR);                          \
         }                                                               \
@@ -76,11 +77,13 @@ Cloth::Cloth(float width, float height, size_t rows, size_t cols, const World &w
     m_tmp_points = new Point[m_num_points];
     m_prev_points = new Point[m_num_points];
 
-    float width_half = width * 0.5f,
-        height_half = height * 0.5f;
+    float width_half = width * 0.5f;
+    float height_half = height * 0.5f;
+    
     for (size_t i = 0; i < rows; ++i)
     {
         float fi = (float)i / (rows - 1);
+        
         for (size_t j = 0; j < cols; ++j)
         {
             float fj = (float)j / (cols - 1);
@@ -276,22 +279,12 @@ void Cloth::apply_sphere_constraints()
     
 }
 
-static void satisfy_spring(glm::vec3 &a, glm::vec3 &b, float distance)
-{
-    glm::vec3 d = b - a;
-    float l = sqrt(glm::dot(d, d));
-    float dl = (distance - l);
-    glm::vec3 offset = (0.5f * dl / l) * d;
-    a -= offset;
-    b += offset;
-}
-
 static glm::vec3 solve_spring(const glm::vec3 &a, const glm::vec3 &b, float distance)
 {
-    glm::vec3 d = b - a;
-    float l = sqrt(glm::dot(d, d));
-    float dl = (distance - l);
-    return (-0.5f * dl / l) * d;
+    glm::vec3 ab = b - a;
+    float l = sqrt(glm::dot(ab, ab));
+    float dl = (l - distance);
+    return (0.5f * dl / l) * ab;
 }
 
 void Cloth::apply_spring_constraints()
@@ -307,26 +300,21 @@ void Cloth::apply_spring_constraints()
                 size_t idx = i * m_cols + j;
                 Point &p = m_points[idx];
                 glm::vec3 dx = glm::vec3(0.0f);
-                if (i > 0) {
+                if (i > 0)
                     dx += solve_spring(p.pos, m_points[idx - m_cols].pos,
-                                         m_dist_to_bottom);
-                }
-                if (j > 0) {
+                                       m_dist_to_bottom);
+                if (j > 0) 
                     dx += solve_spring(p.pos, m_points[idx - 1].pos,
-                                         m_dist_to_left);
-                }
-                if (i < (m_rows - 1)) {
+                                       m_dist_to_left);
+                if (i < (m_rows - 1))
                     dx += solve_spring(p.pos, m_points[idx + m_cols].pos,
-                                         m_dist_to_bottom);
-                }
-                if (j < (m_cols - 1)) {
+                                       m_dist_to_bottom);
+                if (j < (m_cols - 1))
                     dx += solve_spring(p.pos, m_points[idx + 1].pos,
-                                         m_dist_to_left);
-                }
+                                       m_dist_to_left);
+                
                 p.pos += dx;
             }
         }
-        
-        // swap_arrays();
     }
 }

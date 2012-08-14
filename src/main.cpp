@@ -101,11 +101,11 @@ static void do_render(bool alt_color)
     glRotatef(g_angle_x, 1.0f, 0.0f, 0.0f);
     glRotatef(g_angle_y, 0.0f, 1.0f, 0.0f);
 
-    if (!alt_color) {
+    if (!alt_color)
         glColor3f(0.3f, 0.4f, 0.7f);
-    } else {
+    else
         glColor3f(0.2f, 0.3f, 0.5f);
-    }
+
     for (World::sphere_array_t::const_iterator it = g_world->spheres.begin();
          it != g_world->spheres.end(); ++it)
     {
@@ -115,11 +115,11 @@ static void do_render(bool alt_color)
         glPopMatrix();
     }
 
-    if (!alt_color) {
+    if (!alt_color)
         glColor3f(0.4f, 0.7f, 0.8f);
-    } else {
+    else
         glColor3f(0.75f, 0.3f, 0.25f);
-    }
+    
     g_cloth->draw();
 }
 
@@ -147,9 +147,8 @@ void reshape(int width, int height)
 {
     glViewport(0, 0, width, height);
 
-    if (height == 0) {
+    if (height == 0)
         height = 1;
-    }
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -183,22 +182,20 @@ void update()
         sph2.origin.z = cos(sphere_angle + M_PI) * sphere_r;
 
         sphere_angle += sphere_angle_step;
-        while (sphere_angle >= 2 * M_PI) {
+        while (sphere_angle >= 2 * M_PI)
             sphere_angle -= (2 * M_PI);
-        }
         
-        if (expanding) {
+        if (expanding)
+        {
             sphere_r += sphere_r_step;
-            if (sphere_r >= max_r) {
+            if (sphere_r >= max_r)
                 expanding = false;
-            }
         }
         else
         {
             sphere_r -= sphere_r_step;
-            if (sphere_r <= min_r) {
+            if (sphere_r <= min_r)
                 expanding = true;
-            }
         }
         
         g_cloth->step(0.01f);
@@ -208,7 +205,8 @@ void update()
 }
 
 #define REQUIRE_EXTENSION(name)                             \
-    if (!glewIsSupported(name)) {                           \
+    if (!glewIsSupported(name))                             \
+    {                                                       \
         fprintf(stderr, "Error: " name " not supported\n"); \
         return 1;                                           \
     }
@@ -231,10 +229,12 @@ int main(int argc, char *argv[])
 
     g_last_fps_update = ptime();
     
-    if (glewInit() != GLEW_OK) {
+    if (glewInit() != GLEW_OK)
+    {
         fprintf(stderr, "Error: Could not initialize GLEW\n");
         return 1;
     }
+    
     REQUIRE_EXTENSION("GL_ARB_vertex_buffer_object");
 
     g_world = new World();
