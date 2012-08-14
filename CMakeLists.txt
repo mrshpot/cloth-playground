@@ -5,5 +5,5 @@ set(TARGET verlet-cloth)
 project(${TARGET})
 
 add_executable(${TARGET}
-  main.cpp cloth.cpp world.cpp)
+  src/main.cpp src/cloth.cpp src/world.cpp)
 target_link_libraries(${TARGET} glut GLU GL GLEW rt m)
