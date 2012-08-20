@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-set(TARGET verlet-cloth)
+set(TARGET cloth-playground)
 
 project(${TARGET})
 
