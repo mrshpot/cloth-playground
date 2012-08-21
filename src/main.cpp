@@ -19,10 +19,12 @@
 #include "time.hpp"
 #include "cloth.hpp"
 #include "world.hpp"
+#include "script.hpp"
 
 
 World *g_world = NULL;
 Cloth *g_cloth = NULL;
+Script *g_script = NULL;
 
 bool g_update = true;
 
@@ -291,6 +293,18 @@ int main(int argc, char *argv[])
 
     g_cloth = new Cloth(2.0f, 2.0f, 32, 32, *g_world);
     reset();
+
+    if (argc > 1)
+    {
+        const char *fname = argv[1];
+        std::string error_msg;
+        g_script = new Script(*g_world);
+        if (!g_script->load(fname, &error_msg))
+        {
+            fprintf(stderr, "%s\n", error_msg.c_str());
+            return 1;
+        }
+    }
 
     glutMainLoop();
 
