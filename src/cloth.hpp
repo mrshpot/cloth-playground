@@ -15,27 +15,14 @@
 #include "world.hpp"
 
 
-struct Point
-{
-    glm::vec3 pos;
-};
-
 class Cloth
 {
-    Point *m_points, *m_prev_points;
-    unsigned int m_vbo, m_ibo;
-    bool m_locked;
-    float m_prev_dt;
-    glm::vec3 m_gravity;
-    const World &m_world;
-    
-    float m_width, m_height;
-    size_t m_rows, m_cols;
-    float m_dist_to_left, m_dist_to_bottom;
-    
-    size_t m_num_points, m_num_indices;
-
 public:
+    struct Point
+    {
+        glm::vec3 pos;
+    };
+
     Cloth(float width, float height, size_t rows, size_t cols, const World &world);
     ~Cloth();
 
@@ -55,6 +42,19 @@ public:
     float height() { return m_height; }
 
 private:
+    Point *m_points, *m_prev_points;
+    unsigned int m_vbo, m_ibo;
+    bool m_locked;
+    float m_prev_dt;
+    glm::vec3 m_gravity;
+    const World &m_world;
+    
+    float m_width, m_height;
+    size_t m_rows, m_cols;
+    float m_dist_to_left, m_dist_to_bottom;
+    
+    size_t m_num_points, m_num_indices;
+    
     void upload();
     void gen_indices();
     void copy_current_to_prev();
