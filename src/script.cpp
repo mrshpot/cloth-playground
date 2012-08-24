@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2012, Taras Shpot
+ * All rights reserved. Email: mrshpot@gmail.com
+ * 
+ * This demo is free software; you can redistribute it and/or modify
+ * it under the terms of the BSD-style license that is included in the
+ * file LICENSE.
+ */
+
 #include <cstring>
 #include <cassert>
 #include <string>
@@ -5,10 +14,21 @@
 #include <lua.hpp>
 
 #include "script.hpp"
+#include "script_detail.hpp"
+#include "script_collection.hpp"
 #include "world.hpp"
 
 
 #define PRINT_DEBUG(fmt, ...) printf("DBG: " fmt, ##__VA_ARGS__)
+#define DEBUG_CHECKSTACK() do {                     \
+        int tmp__top = lua_gettop(m_lua);               \
+        if (tmp__top != 0) {                            \
+            PRINT_DEBUG("%s:%d: %d items in stack\n",       \
+                        __FILE__, __LINE__, tmp__top);      \
+        }                                                   \
+    } while (false)
+
+void sphere_register(lua_State *L);
 
 class ScriptImpl
 {
@@ -32,6 +52,16 @@ ScriptImpl::ScriptImpl(World &world)
     m_lua = luaL_newstate();
     assert(m_lua != NULL);
     luaL_openlibs(m_lua);
+    DEBUG_CHECKSTACK();
+
+    sphere_register(m_lua);
+    DEBUG_CHECKSTACK();
+    
+    collection_register(m_lua);
+    DEBUG_CHECKSTACK();
+    collection_new<Sphere>(m_lua, world.spheres);
+    lua_setglobal(m_lua, "spheres");
+    DEBUG_CHECKSTACK();
 }
 
 ScriptImpl::~ScriptImpl()
@@ -60,6 +90,47 @@ bool ScriptImpl::load(const char *fname, std::string *error_msg)
     }
 }
 
+void ScriptImpl::init()
+{
+    lua_getglobal(m_lua, "init");
+    if (lua_isnil(m_lua, -1))
+    {
+        lua_pop(m_lua, 1);
+        return;
+    }
+    else
+    {
+        if (lua_pcall(m_lua, 0, 0, 0) != 0)
+        {
+            fprintf(stderr, "%s\n", lua_tostring(m_lua, -1));
+            lua_pop(m_lua, 1);
+        }
+    }
+}
+
+void ScriptImpl::reset()
+{
+}
+
+void ScriptImpl::update(double dt)
+{
+    lua_getglobal(m_lua, "update");
+    if (lua_isnil(m_lua, -1))
+    {
+        lua_pop(m_lua, 1);
+        return;
+    }
+    else
+    {
+        lua_pushnumber(m_lua, dt);
+        if (lua_pcall(m_lua, 1, 0, 0) != 0)
+        {
+            fprintf(stderr, "%s\n", lua_tostring(m_lua, -1));
+            lua_pop(m_lua, 1);
+        }
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 Script::Script(World &world)
@@ -80,12 +151,15 @@ bool Script::load(const char *fname, std::string *error_msg)
 
 void Script::init()
 {
+    m->init();
 }
 
 void Script::reset()
 {
+    m->reset();
 }
 
 void Script::update(double dt)
 {
+    m->update(dt);
 }

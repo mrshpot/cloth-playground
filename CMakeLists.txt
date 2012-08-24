@@ -19,5 +19,7 @@ endif()
 configure_file(src/platform.hpp.in src/platform.hpp)
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/src")
 add_executable(${TARGET}
-  src/main.cpp src/cloth.cpp src/script.cpp src/w32_time.cpp src/posix_time.cpp)
+  src/main.cpp src/cloth.cpp
+  src/script.cpp src/script_sphere.cpp src/script_collection.cpp
+  src/w32_time.cpp src/posix_time.cpp)
 target_link_libraries(${TARGET} ${LIBS})
