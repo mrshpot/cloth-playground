@@ -230,10 +230,11 @@ void Cloth::apply_plane_constraints()
         for (size_t idx = 0; idx < m_num_points; ++idx)
         {
             Point &p = m_points[idx];
-            float d = it->equ(p.pos);
+            Plane *pl = *it;
+            float d = pl->equ(p.pos);
             if (d < 0)
             {
-                p.pos -= it->n * d;
+                p.pos -= pl->n * d;
             }
         }
     }
@@ -244,17 +245,18 @@ void Cloth::apply_sphere_constraints()
     for (World::sphere_array_t::const_iterator it = m_world.spheres.begin();
          it != m_world.spheres.end(); ++it)
     {
-        float r = it->r;
+        Sphere *sp = *it;
+        float r = sp->r;
         float r2 = r * r;
         
         for (size_t idx = 0; idx < m_num_points; ++idx)
         {
             Point &p = m_points[idx];
-            float d = it->equ(p.pos);
+            float d = sp->equ(p.pos);
             if (d < 0)
             {
-                glm::vec3 v = p.pos - it->origin;
-                p.pos = (r / sqrtf(r2 + d)) * v + it->origin;
+                glm::vec3 v = p.pos - sp->origin;
+                p.pos = (r / sqrtf(r2 + d)) * v + sp->origin;
             }
         }
     }

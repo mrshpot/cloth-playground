@@ -146,9 +146,10 @@ static void do_render(bool alt_color)
     for (World::sphere_array_t::const_iterator it = g_world->spheres.begin();
          it != g_world->spheres.end(); ++it)
     {
+        Sphere *sp = *it;
         glPushMatrix();
-        glTranslatef(it->origin.x, it->origin.y, it->origin.z);
-        glutSolidSphere(it->r, 20, 20);
+        glTranslatef(sp->origin.x, sp->origin.y, sp->origin.z);
+        glutSolidSphere(sp->r, 20, 20);
         glPopMatrix();
     }
 
@@ -208,8 +209,8 @@ void update()
     static const float sphere_r_step= 0.002f;
 
     assert(g_world->spheres.size() >= 2);
-    Sphere &sph1 = g_world->spheres[0];
-    Sphere &sph2 = g_world->spheres[1];
+    Sphere &sph1 = *(g_world->spheres[0]);
+    Sphere &sph2 = *(g_world->spheres[1]);
     
     if (g_update)
     {
@@ -279,17 +280,17 @@ int main(int argc, char *argv[])
                                     glm::vec3(-1.0f, 0.5f, 1.0f),
                                     glm::vec3(1.0f, -0.5f, 1.0f)));*/
 
-    g_world->planes.push_back(Plane(glm::vec3(0.0f, -0.9f, 0.0f),
-                                    glm::vec3(0.0f, -0.9f, 1.0f),
-                                    glm::vec3(1.0f, -0.9f, 0.0f)));
+    g_world->planes.push_back(new Plane(glm::vec3(0.0f, -0.9f, 0.0f),
+                                        glm::vec3(0.0f, -0.9f, 1.0f),
+                                        glm::vec3(1.0f, -0.9f, 0.0f)));
 
     /*g_world->planes.push_back(Plane(glm::vec3(0.0f, 0.1f, 0.0f),
                                     glm::vec3(1.0f, 0.1f, 0.0f),
                                     glm::vec3(0.0f, 0.1f, 1.0f)));*/
     
     Sphere tmp_sphere(glm::vec3(0.0f, -0.5f, 0.1f), 0.4f);
-    g_world->spheres.push_back(tmp_sphere);
-    g_world->spheres.push_back(tmp_sphere); // two spheres
+    g_world->spheres.push_back(new Sphere(tmp_sphere));
+    g_world->spheres.push_back(new Sphere(tmp_sphere)); // two spheres
 
     g_cloth = new Cloth(2.0f, 2.0f, 32, 32, *g_world);
     reset();
@@ -308,6 +309,17 @@ int main(int argc, char *argv[])
 
     glutMainLoop();
 
+    for (World::sphere_array_t::iterator it = g_world->spheres.begin();
+         it != g_world->spheres.end(); ++it)
+    {
+        delete *it;
+    }
+    for (World::plane_array_t::iterator it = g_world->planes.begin();
+         it != g_world->planes.end(); ++it)
+    {
+        delete *it;
+    }
+    
     delete g_cloth;
     delete g_world;
     
