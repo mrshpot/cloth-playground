@@ -262,13 +262,17 @@ int main(int argc, char *argv[])
 
     if (argc > 1)
     {
-        const char *fname = argv[1];
         std::string error_msg;
         g_script = new Script(*g_world);
-        if (!g_script->load(fname, &error_msg))
+
+        for (int i = 1; i < argc; ++i)
         {
-            fprintf(stderr, "%s\n", error_msg.c_str());
-            return 1;
+            const char *fname = argv[i];
+            if (!g_script->load(fname, &error_msg))
+            {
+                fprintf(stderr, "%s\n", error_msg.c_str());
+                return 1;
+            }
         }
         g_script->init();
     }
