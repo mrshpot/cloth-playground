@@ -79,8 +79,8 @@ struct Plane
 
 struct World
 {
-    typedef std::vector<Sphere> sphere_array_t;
-    typedef std::vector<Plane> plane_array_t;
+    typedef std::vector<Sphere*> sphere_array_t;
+    typedef std::vector<Plane*> plane_array_t;
     
     sphere_array_t spheres;
     plane_array_t planes;

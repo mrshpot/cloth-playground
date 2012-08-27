@@ -19,10 +19,12 @@
 #include "time.hpp"
 #include "cloth.hpp"
 #include "world.hpp"
+#include "script.hpp"
 
 
 World *g_world = NULL;
 Cloth *g_cloth = NULL;
+Script *g_script = NULL;
 
 bool g_update = true;
 
@@ -144,9 +146,10 @@ static void do_render(bool alt_color)
     for (World::sphere_array_t::const_iterator it = g_world->spheres.begin();
          it != g_world->spheres.end(); ++it)
     {
+        Sphere *sp = *it;
         glPushMatrix();
-        glTranslatef(it->origin.x, it->origin.y, it->origin.z);
-        glutSolidSphere(it->r, 20, 20);
+        glTranslatef(sp->origin.x, sp->origin.y, sp->origin.z);
+        glutSolidSphere(sp->r, 20, 20);
         glPopMatrix();
     }
 
@@ -196,43 +199,12 @@ void update()
 {
     double t = ptime();
 
-    // moving spheres
-    static float sphere_angle = 0.0f;
-    static float sphere_r = 0.1f;
-    static bool expanding = true;
-    static const float min_r = 0.4f;
-    static const float max_r = 1.2f;
-    static const float sphere_angle_step = 0.04f;
-    static const float sphere_r_step= 0.002f;
-
-    assert(g_world->spheres.size() >= 2);
-    Sphere &sph1 = g_world->spheres[0];
-    Sphere &sph2 = g_world->spheres[1];
-    
     if (g_update)
     {
-        sph1.origin.x = sin(sphere_angle) * sphere_r;
-        sph1.origin.z = cos(sphere_angle) * sphere_r;
-        sph2.origin.x = sin(sphere_angle + M_PI) * sphere_r;
-        sph2.origin.z = cos(sphere_angle + M_PI) * sphere_r;
-
-        sphere_angle += sphere_angle_step;
-        while (sphere_angle >= 2 * M_PI)
-            sphere_angle -= (2 * M_PI);
-        
-        if (expanding)
+        if (g_script != NULL)
         {
-            sphere_r += sphere_r_step;
-            if (sphere_r >= max_r)
-                expanding = false;
+            g_script->update(0.01f);
         }
-        else
-        {
-            sphere_r -= sphere_r_step;
-            if (sphere_r <= min_r)
-                expanding = true;
-        }
-        
         g_cloth->step(0.01f);
     }
     
@@ -277,25 +249,39 @@ int main(int argc, char *argv[])
                                     glm::vec3(-1.0f, 0.5f, 1.0f),
                                     glm::vec3(1.0f, -0.5f, 1.0f)));*/
 
-    g_world->planes.push_back(Plane(glm::vec3(0.0f, -0.9f, 0.0f),
-                                    glm::vec3(0.0f, -0.9f, 1.0f),
-                                    glm::vec3(1.0f, -0.9f, 0.0f)));
+    /*g_world->planes.push_back(new Plane(glm::vec3(0.0f, -0.9f, 0.0f),
+                                        glm::vec3(0.0f, -0.9f, 1.0f),
+                                        glm::vec3(1.0f, -0.9f, 0.0f)));*/
 
     /*g_world->planes.push_back(Plane(glm::vec3(0.0f, 0.1f, 0.0f),
                                     glm::vec3(1.0f, 0.1f, 0.0f),
                                     glm::vec3(0.0f, 0.1f, 1.0f)));*/
     
-    Sphere tmp_sphere(glm::vec3(0.0f, -0.5f, 0.1f), 0.4f);
-    g_world->spheres.push_back(tmp_sphere);
-    g_world->spheres.push_back(tmp_sphere); // two spheres
-
     g_cloth = new Cloth(2.0f, 2.0f, 32, 32, *g_world);
     reset();
 
-    glutMainLoop();
+    if (argc > 1)
+    {
+        std::string error_msg;
+        g_script = new Script(*g_world);
 
+        for (int i = 1; i < argc; ++i)
+        {
+            const char *fname = argv[i];
+            if (!g_script->load(fname, &error_msg))
+            {
+                fprintf(stderr, "%s\n", error_msg.c_str());
+                return 1;
+            }
+        }
+        g_script->init();
+    }
+
+    glutMainLoop();
+    
     delete g_cloth;
     delete g_world;
+    if (g_script != NULL) delete g_script;
     
     return 0;
 }
