@@ -5,8 +5,15 @@ angle_speed = 1.5
 function init()
    local s
    print("Hello from Lua")
+   
    s = Sphere.new(0.0, -0.5, 0.1, 0.4)
    spheres:append(s)
+
+   p = Plane.new(0.0, 1.0, 0.0, 0.0)
+   p:from_triangle({0.0, -0.9, 0.0},
+   				   {0.0, -0.9, 1.0},
+   				   {1.0, -0.9, 0.0})
+   planes:append(p)
 end
 
 function update(dt)
