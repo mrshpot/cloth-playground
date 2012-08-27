@@ -16,6 +16,7 @@
 #include "script.hpp"
 #include "script_detail.hpp"
 #include "script_sphere.hpp"
+#include "script_plane.hpp"
 #include "script_collection.hpp"
 #include "world.hpp"
 
@@ -55,11 +56,18 @@ ScriptImpl::ScriptImpl(World &world)
 
     sphere_register(m_lua);
     DEBUG_CHECKSTACK();
+
+    plane_register(m_lua);
+    DEBUG_CHECKSTACK();
     
     collection_register(m_lua);
     DEBUG_CHECKSTACK();
+    
     collection_new<Sphere>(m_lua, world.spheres);
     lua_setglobal(m_lua, "spheres");
+    DEBUG_CHECKSTACK();
+    collection_new<Plane>(m_lua, world.planes);
+    lua_setglobal(m_lua, "planes");
     DEBUG_CHECKSTACK();
 }
 

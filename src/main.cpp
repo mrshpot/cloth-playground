@@ -249,9 +249,9 @@ int main(int argc, char *argv[])
                                     glm::vec3(-1.0f, 0.5f, 1.0f),
                                     glm::vec3(1.0f, -0.5f, 1.0f)));*/
 
-    g_world->planes.push_back(new Plane(glm::vec3(0.0f, -0.9f, 0.0f),
+    /*g_world->planes.push_back(new Plane(glm::vec3(0.0f, -0.9f, 0.0f),
                                         glm::vec3(0.0f, -0.9f, 1.0f),
-                                        glm::vec3(1.0f, -0.9f, 0.0f)));
+                                        glm::vec3(1.0f, -0.9f, 0.0f)));*/
 
     /*g_world->planes.push_back(Plane(glm::vec3(0.0f, 0.1f, 0.0f),
                                     glm::vec3(1.0f, 0.1f, 0.0f),

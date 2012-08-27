@@ -157,3 +157,4 @@ void collection_new(lua_State *L, std::vector<T*> &collection)
 // instantiate templates
 
 template void collection_new<Sphere>(lua_State *L, std::vector<Sphere*> &);
+template void collection_new<Plane>(lua_State *L, std::vector<Plane*> &);
