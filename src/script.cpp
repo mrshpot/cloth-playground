@@ -15,6 +15,7 @@
 
 #include "script.hpp"
 #include "script_detail.hpp"
+#include "script_sphere.hpp"
 #include "script_collection.hpp"
 #include "world.hpp"
 
@@ -27,8 +28,6 @@
                         __FILE__, __LINE__, tmp__top);      \
         }                                                   \
     } while (false)
-
-void sphere_register(lua_State *L);
 
 class ScriptImpl
 {
