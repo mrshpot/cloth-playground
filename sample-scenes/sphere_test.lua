@@ -1,13 +1,17 @@
+num_spheres = 5
 angle = 0
-rotation_r = 0.5
+sphere_r = 0.3
+rotation_r = 0.6
 angle_speed = 1.5
 
 function init()
    local s
    print("Hello from Lua")
-   
-   s = Sphere.new(0.0, -0.5, 0.1, 0.4)
-   spheres:append(s)
+
+   for i = 1,num_spheres do
+	  local s = Sphere.new(0.0, -0.5, 0.1, sphere_r)
+	  spheres:append(s)
+   end
 
    p = Plane.new(0.0, 1.0, 0.0, 0.0)
    p:from_triangle({0.0, -0.9, 0.0},
@@ -17,8 +21,11 @@ function init()
 end
 
 function update(dt)
-   local s = spheres:get(1)
    angle = angle + (angle_speed * dt)
-   s.x = math.sin(angle) * rotation_r
-   s.z = math.cos(angle) * rotation_r
+   for i = 1,num_spheres do
+	  local s = spheres:get(i)
+	  local s_angle = angle + (i * 2 * math.pi / num_spheres)
+	  s.x = math.sin(s_angle) * rotation_r
+	  s.z = math.cos(s_angle) * rotation_r
+   end
 end
