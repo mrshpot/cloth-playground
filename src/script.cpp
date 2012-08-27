@@ -14,10 +14,10 @@
 #include <lua.hpp>
 
 #include "script.hpp"
-#include "script_detail.hpp"
-#include "script_sphere.hpp"
-#include "script_plane.hpp"
-#include "script_collection.hpp"
+#include "script/utils.hpp"
+#include "script/sphere.hpp"
+#include "script/plane.hpp"
+#include "script/collection.hpp"
 #include "world.hpp"
 
 

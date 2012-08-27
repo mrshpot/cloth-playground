@@ -12,7 +12,7 @@
 #include <glm/glm.hpp>
 #include <lua.hpp>
 
-#include "script_vec.hpp"
+#include "vec.hpp"
 
 
 static bool try_get_vec3(lua_State *L, glm::vec3 *out_vec)

@@ -11,9 +11,9 @@
 
 #include <lua.hpp>
 
-#include "world.hpp"
-#include "script_detail.hpp"
-#include "script_vec.hpp"
+#include "utils.hpp"
+#include "vec.hpp"
+#include "../world.hpp"
 
 
 static int plane_new(lua_State *L);

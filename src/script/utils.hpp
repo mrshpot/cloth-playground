@@ -7,8 +7,8 @@
  * file LICENSE.
  */
 
-#ifndef SCRIPT_IMPL_HPP__INCLUDED
-#define SCRIPT_IMPL_HPP__INCLUDED
+#ifndef SCRIPT_UTILS_HPP__INCLUDED
+#define SCRIPT_UTILS_HPP__INCLUDED
 
 
 struct lua_State;
@@ -33,4 +33,4 @@ T *script_checkudata(lua_State *L, int idx, const char *tname)
     return *(T**)userdata;
 }
 
-#endif // SCRIPT_IMPL_HPP__INCLUDED
+#endif // SCRIPT_UTILS_HPP__INCLUDED

@@ -13,8 +13,8 @@
 
 #include <lua.hpp>
 
-#include "script_detail.hpp"
-#include "world.hpp"
+#include "utils.hpp"
+#include "../world.hpp"
 
 
 class ScriptCollectionBase

@@ -11,8 +11,8 @@
 
 #include <lua.hpp>
 
-#include "world.hpp"
-#include "script_detail.hpp"
+#include "utils.hpp"
+#include "../world.hpp"
 
 
 static int sphere_new(lua_State *L);

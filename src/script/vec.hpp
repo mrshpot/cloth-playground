@@ -15,4 +15,4 @@
 
 glm::vec3 script_checkvec(lua_State *L, int index);
 
-#endif // SCRIPT_POINT_HPP__INCLUDED
+#endif // SCRIPT_VEC_HPP__INCLUDED
