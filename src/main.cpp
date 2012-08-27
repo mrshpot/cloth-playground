@@ -201,7 +201,10 @@ void update()
 
     if (g_update)
     {
-        g_script->update(0.01f);
+        if (g_script != NULL)
+        {
+            g_script->update(0.01f);
+        }
         g_cloth->step(0.01f);
     }
     
