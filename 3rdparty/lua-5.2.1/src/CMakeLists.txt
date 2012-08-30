@@ -7,6 +7,10 @@ set (LUA_CORE_SRCS lapi.c lcode.c lctype.c ldebug.c ldo.c ldump.c lfunc.c lgc.c 
 set (LUA_LIB_SRCS lauxlib.c lbaselib.c lbitlib.c lcorolib.c ldblib.c liolib.c 
 	lmathlib.c loslib.c lstrlib.c ltablib.c loadlib.c linit.c)
 
+if (UNIX)
+  link_libraries(m)
+endif (UNIX)
+
 # create the library
 add_library (lua ${LUA_LIB_SRCS} ${LUA_CORE_SRCS})
 
@@ -20,3 +24,4 @@ set_target_properties(luaexec PROPERTIES OUTPUT_NAME lua)
 # create the luac thing (I have no clue) and link it
 add_executable (luac luac.c)
 target_link_libraries (luac lua)
+
