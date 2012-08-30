@@ -13,6 +13,7 @@
 
 #include <lua.hpp>
 
+#include "lua_compat.hpp"
 #include "utils.hpp"
 #include "../world.hpp"
 
@@ -69,8 +70,8 @@ static const luaL_Reg collection_fields[] = {
 void collection_register(lua_State *L)
 {
     luaL_newmetatable(L, ScriptTypeMetadata<ScriptCollectionBase>::tname);
-    luaL_register(L, NULL, collection_meta);
-    luaL_register(L, NULL, collection_fields);
+    script_register(L, collection_meta);
+    script_register(L, collection_fields);
     lua_pushvalue(L, -1);
     lua_setfield(L, -2, "__index");
     lua_pop(L, 1);

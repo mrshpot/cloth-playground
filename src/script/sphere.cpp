@@ -11,6 +11,7 @@
 
 #include <lua.hpp>
 
+#include "lua_compat.hpp"
 #include "utils.hpp"
 #include "../world.hpp"
 
@@ -39,9 +40,11 @@ static const luaL_Reg sphere_meta[] = {
 void sphere_register(lua_State *L)
 {
     luaL_newmetatable(L, ScriptTypeMetadata<Sphere>::tname);
-    luaL_register(L, NULL, sphere_meta);
-    luaL_register(L, "Sphere", sphere_globals);
-    lua_pop(L, 2);
+    script_register(L, sphere_meta);
+	lua_newtable(L);
+    script_register(L, sphere_globals);
+	lua_setglobal(L, "Sphere");
+    lua_pop(L, 1);
 }
 
 static int sphere_new(lua_State *L)

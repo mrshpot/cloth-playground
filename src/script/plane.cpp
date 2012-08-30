@@ -11,6 +11,7 @@
 
 #include <lua.hpp>
 
+#include "lua_compat.hpp"
 #include "utils.hpp"
 #include "vec.hpp"
 #include "../world.hpp"
@@ -47,9 +48,11 @@ static const luaL_Reg plane_fields[] = {
 void plane_register(lua_State *L)
 {
     luaL_newmetatable(L, ScriptTypeMetadata<Plane>::tname);
-    luaL_register(L, NULL, plane_meta);
-    luaL_register(L, "Plane", plane_globals);
-    lua_pop(L, 2);
+    script_register(L, plane_meta);
+	lua_newtable(L);
+    script_register(L, plane_globals);
+	lua_setglobal(L, "Plane");
+    lua_pop(L, 1);
 }
 
 static int plane_new(lua_State *L)

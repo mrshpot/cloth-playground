@@ -7,7 +7,7 @@
  * file LICENSE.
  */
 
-#include "platform.hpp"
+#include <platform.hpp>
 #ifdef PLATFORM_WINDOWS
 
 #include <windows.h>

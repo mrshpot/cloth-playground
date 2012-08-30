@@ -1,25 +1,27 @@
 cmake_minimum_required(VERSION 2.6)
 
 set(TARGET cloth-playground)
-
 project(${TARGET})
 
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
   set(PLATFORM_POSIX Yes)
-  set(LIBS lua glut GLU GL GLEW rt m)
 else("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
   set(PLATFORM_WINDOWS Yes)
-  set(LIBS lua glut opengl32 glu32 glew32)
 else()
   message(FATAL_ERROR "Unrecognized platform: ${CMAKE_SYSTEM_NAME}")
   return()
 endif()
-  
 
-configure_file(src/platform.hpp.in src/platform.hpp)
-include_directories("${CMAKE_CURRENT_BINARY_DIR}/src")
-add_executable(${TARGET}
-  src/main.cpp src/cloth.cpp
-  src/script.cpp src/script/vec.cpp src/script/plane.cpp src/script/sphere.cpp src/script/collection.cpp
-  src/w32_time.cpp src/posix_time.cpp)
-target_link_libraries(${TARGET} ${LIBS})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake-modules/")
+
+set(VENDORS ${PROJECT_SOURCE_DIR}/3rdparty)
+set(GLM_INCLUDE_DIR ${VENDORS}/glm-0.9.3.4)
+set(LUA_SOURCE_DIR ${VENDORS}/lua-5.2.1)
+set(LUA_INCLUDE_DIR ${LUA_SOURCE_DIR}/src)
+
+find_package(OpenGL)
+find_package(GLUT)
+find_package(GLEW)
+
+add_subdirectory(${LUA_SOURCE_DIR})
+add_subdirectory(src)

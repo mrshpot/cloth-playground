@@ -16,6 +16,7 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 
+#include "w32_compat.hpp"
 #include "time.hpp"
 #include "cloth.hpp"
 #include "world.hpp"
