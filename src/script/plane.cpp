@@ -49,9 +49,9 @@ void plane_register(lua_State *L)
 {
     luaL_newmetatable(L, ScriptTypeMetadata<Plane>::tname);
     script_register(L, plane_meta);
-	lua_newtable(L);
+    lua_newtable(L);
     script_register(L, plane_globals);
-	lua_setglobal(L, "Plane");
+    lua_setglobal(L, "Plane");
     lua_pop(L, 1);
 }
 

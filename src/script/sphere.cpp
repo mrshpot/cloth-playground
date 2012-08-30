@@ -41,9 +41,9 @@ void sphere_register(lua_State *L)
 {
     luaL_newmetatable(L, ScriptTypeMetadata<Sphere>::tname);
     script_register(L, sphere_meta);
-	lua_newtable(L);
+    lua_newtable(L);
     script_register(L, sphere_globals);
-	lua_setglobal(L, "Sphere");
+    lua_setglobal(L, "Sphere");
     lua_pop(L, 1);
 }
 
