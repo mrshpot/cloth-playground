@@ -27,7 +27,7 @@ The project uses:
 
 ## Building on Windows
 
-Prebuild GLUT binaries can be downloaded
+Prebuilt GLUT binaries can be downloaded
 [here](http://www.transmissionzero.co.uk/software/freeglut-devel/). GLEW
 binaries are provided on
 [the project page](http://glew.sourceforge.net/).
