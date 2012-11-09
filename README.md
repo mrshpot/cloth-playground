@@ -62,7 +62,7 @@ for example:
 
     cloth-playground sample-scenes/sphere_test.lua
 
-![](image.png)
+![](https://raw.github.com/mrshpot/cloth-playground/master/image.png)
 
 The mouse rotates the camera, Space stands for pause/unpause.
 
