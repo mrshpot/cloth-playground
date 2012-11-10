@@ -25,6 +25,9 @@ public:
     void draw();
 
     glm::vec3& pos_at(int i, int j) { return m_points[i * m_cols + j].pos; }
+    void make_plane(const glm::vec3 &origin,
+                    const glm::vec3 &dir1, const glm::vec3 &dir2,
+                    float len1, float len2);
 
     size_t rows() { return m_rows; }
     size_t cols() { return m_cols; }

@@ -76,6 +76,23 @@ void Surface::draw()
     glDisableClientState(GL_INDEX_ARRAY);
 }
 
+void Surface::make_plane(const glm::vec3 &origin,
+                         const glm::vec3 &dir1, const glm::vec3 &dir2,
+                         float len1, float len2)
+{
+    glm::vec3 d1 = glm::normalize(dir1) * (len1 / (m_rows - 1));
+    glm::vec3 d2 = glm::normalize(dir2) * (len2 / (m_cols - 1));
+    
+    for (size_t i = 0; i < m_rows; ++i)
+    {
+        for (size_t j = 0; j < m_cols; ++j)
+        {
+            size_t idx = i * m_cols + j;
+            m_points[idx].pos = origin + d1 * (float)i + d2 * (float)j;
+        }
+    }
+}
+
 void Surface::upload()
 {
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_vertex_buffer);
