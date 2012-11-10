@@ -48,6 +48,9 @@ const char *title_format = "Cloth, %f fps";
 
 static const float sphere_r_bias = 1e-2;
 
+static const float z_near = 3.0f;
+static const float z_far = 30.0f;
+
 void update_fps()
 {
     ++g_num_frames;
@@ -210,7 +213,7 @@ void reshape(int width, int height)
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(120.0, (GLdouble)width / height, 0.01, 100.0);
+    gluPerspective(80.0, (GLdouble)width / height, 0.01, 100.0);
     
     glMatrixMode(GL_MODELVIEW);
 }
