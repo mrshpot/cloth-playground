@@ -1,6 +1,6 @@
-num_spheres = 5
+num_spheres = 7
 angle = 0
-sphere_r = 0.3
+sphere_r = 0.2
 rotation_r = 0.6
 angle_speed = 1.5
 
@@ -27,5 +27,6 @@ function update(dt)
 	  local s_angle = angle + (i * 2 * math.pi / num_spheres)
 	  s.x = math.sin(s_angle) * rotation_r
 	  s.z = math.cos(s_angle) * rotation_r
+	  s.y = math.cos(s_angle * 5) * 0.3 - 0.5
    end
 end
