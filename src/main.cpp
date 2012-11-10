@@ -88,12 +88,14 @@ void reset()
         {
             float fj = (float)j / (cols - 1);
 
-            glm::vec3 &p = c.at(i, j).pos;
+            glm::vec3 &p = c.pos_at(i, j);
             p.x = fi * height - height_half;
-            p.y = 1.0f;
+            p.y = 0.5f;
             p.z = fj * width - width_half;
         }
     }
+    c.invmass_at(0, 0) = 0.0f;
+    c.invmass_at(rows - 1, 0) = 0.0f;
 
     c.unlock();
     c.reset_velocity();
