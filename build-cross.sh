@@ -8,7 +8,12 @@ mkdir -p "$dst"
 cd "$dst"
 
 GNU_HOST=i486-mingw32
-cmake -DGNU_HOST=${GNU_HOST} -DCMAKE_TOOLCHAIN_FILE=../mingw-cross.cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
+
+cmake \
+	-DGNU_HOST=${GNU_HOST} \
+	-DCMAKE_TOOLCHAIN_FILE=../mingw-cross.cmake \
+	-DCMAKE_VERBOSE_MAKEFILE=ON \
+	-DCMAKE_BUILD_TYPE=RelWithDebInfo ..
 make
 
 mkdir -p dlls
