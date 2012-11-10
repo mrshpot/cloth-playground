@@ -74,6 +74,7 @@ Cloth::Cloth(float width, float height, size_t rows, size_t cols, const World &w
     m_num_points = rows * cols;
     m_points = new Point[m_num_points];
     m_prev_points = new Point[m_num_points];
+    m_spring_phase_buf = new Point[m_num_points];
 
     memset(m_points, m_num_points * sizeof(m_points[0]), 0);
     memset(m_prev_points, m_num_points * sizeof(m_points[0]), 0);
@@ -83,6 +84,7 @@ Cloth::~Cloth()
 {
     delete[] m_points;
     delete[] m_prev_points;
+    delete[] m_spring_phase_buf;
 }
 
 void Cloth::lock()
@@ -204,6 +206,8 @@ static glm::vec3 solve_spring(const glm::vec3 &a, const glm::vec3 &b, float dist
     glm::vec3 ab = b - a;
     float l = sqrt(glm::dot(ab, ab));
     float dl = (l - distance);
+    // allow infinite compression
+    if (dl < 0.0f) dl = 0.0f;
     return (0.5f * dl / l) * ab;
 }
 
@@ -233,8 +237,9 @@ void Cloth::apply_spring_constraints()
                     dx += solve_spring(p.pos, m_points[idx + 1].pos,
                                        m_dist_to_left);
                 
-                p.pos += dx;
+                m_spring_phase_buf[idx].pos = p.pos + dx;
             }
         }
+        std::swap(m_points, m_spring_phase_buf);
     }
 }

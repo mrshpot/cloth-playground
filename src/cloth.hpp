@@ -41,7 +41,7 @@ public:
     float height() { return m_height; }
 
 private:
-    Point *m_points, *m_prev_points;
+    Point *m_points, *m_prev_points, *m_spring_phase_buf;
     bool m_locked;
     float m_prev_dt;
     glm::vec3 m_gravity;
