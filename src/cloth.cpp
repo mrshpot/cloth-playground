@@ -56,10 +56,10 @@ const char* gl_error_str(GLenum error)
 
 
 Cloth::Cloth(float width, float height, size_t rows, size_t cols, const World &world)
-    : m_locked(false)
-    , m_prev_dt(-1.0f)
+    : m_prev_dt(-1.0f)
     , m_gravity(glm::vec3(0.0f, -0.9f, 0.0f))
     , m_world(world)
+    , m_surface(rows, cols)
     , m_width(width)
     , m_height(height)
     , m_rows(rows)
@@ -68,9 +68,6 @@ Cloth::Cloth(float width, float height, size_t rows, size_t cols, const World &w
     assert(rows >= 2);
     assert(cols >= 2);
     
-    glGenBuffersARB(1, &m_vbo);
-    glGenBuffersARB(1, &m_ibo);
-
     m_dist_to_left = m_width / (m_cols - 1.0f);
     m_dist_to_bottom = m_height / (m_rows - 1.0f);
     
@@ -80,31 +77,23 @@ Cloth::Cloth(float width, float height, size_t rows, size_t cols, const World &w
 
     memset(m_points, m_num_points * sizeof(m_points[0]), 0);
     memset(m_prev_points, m_num_points * sizeof(m_points[0]), 0);
-
-    gen_indices();
-    upload();
 }
 
 Cloth::~Cloth()
 {
-    glDeleteBuffersARB(1, &m_vbo);
-    glDeleteBuffersARB(1, &m_ibo);
-    
     delete[] m_points;
     delete[] m_prev_points;
 }
 
 void Cloth::lock()
 {
-    assert(!m_locked);
-    m_locked = true;
+    m_surface.lock();
 }
 
 void Cloth::unlock()
 {
-    assert(m_locked);
-    m_locked = false;
     upload();
+    m_surface.unlock();
 }
 
 void Cloth::reset_velocity()
@@ -114,23 +103,7 @@ void Cloth::reset_velocity()
 
 void Cloth::draw()
 {
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_vbo);
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_ibo);
-    
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_INDEX_ARRAY);
-    
-    glVertexPointer(3, GL_FLOAT, sizeof(m_points[0]),
-                    (GLvoid*)offsetof(Point, pos));
-    glIndexPointer(GL_UNSIGNED_INT, sizeof(GLuint), (GLvoid*)NULL);
-
-    glDrawElements(GL_TRIANGLES, m_num_indices, GL_UNSIGNED_INT, NULL);
-    
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
-    
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_INDEX_ARRAY);
+    m_surface.draw();
 }
 
 void Cloth::step(float dt)
@@ -166,55 +139,18 @@ void Cloth::step(float dt)
     apply_sphere_constraints();
 
     m_prev_dt = dt;
-    upload();
 }
 
 void Cloth::upload()
 {
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_vbo);
-    glBufferDataARB(GL_ARRAY_BUFFER_ARB,
-                    sizeof(m_points[0]) * m_num_points,
-                    m_points,
-                    GL_DYNAMIC_DRAW_ARB);
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-}
-
-void Cloth::gen_indices()
-{
-    // 2 triangles per each quad cell
-    size_t cell_rows = m_rows - 1;
-    size_t cell_cols = m_cols - 1;
-    
-    m_num_indices = cell_rows * cell_cols * 2 * 3;
-    GLuint *indices = new GLuint[m_num_indices];
-
-    // iterate over each cell (we have rows-1 x cols-1 quad cells)
-    for (size_t i = 0; i < cell_rows; ++i)
+    for (size_t i = 0; i < m_rows; ++i)
     {
-        for (size_t j = 0; j < cell_cols; ++j)
+        for (size_t j = 0; j < m_cols; ++j)
         {
-            // add two CCW triangles for each
-            size_t point_idx = i * m_cols + j;
-            size_t idx_idx = (i * cell_cols + j) * 6;
-            
-            indices[idx_idx + 0] = point_idx;
-            indices[idx_idx + 1] = point_idx + 1;
-            indices[idx_idx + 2] = point_idx + m_cols;
-
-            indices[idx_idx + 3] = point_idx + m_cols;
-            indices[idx_idx + 4] = point_idx + 1;
-            indices[idx_idx + 5] = point_idx + m_cols + 1;
+            size_t idx = i * m_cols + j;
+            m_surface.pos_at(i, j) = m_points[idx].pos;
         }
     }
-    
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_ibo);
-    glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB,
-                    sizeof(indices[0]) * m_num_indices,
-                    indices,
-                    GL_STATIC_DRAW_ARB);
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
-
-    delete[] indices;
 }
 
 void Cloth::copy_current_to_prev()

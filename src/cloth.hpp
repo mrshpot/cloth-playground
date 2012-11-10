@@ -10,8 +10,7 @@
 #ifndef CLOTH_HPP__INCLUDED
 #define CLOTH_HPP__INCLUDED
 
-#include <glm/glm.hpp>
-
+#include "surface.hpp"
 #include "world.hpp"
 
 
@@ -43,11 +42,11 @@ public:
 
 private:
     Point *m_points, *m_prev_points;
-    unsigned int m_vbo, m_ibo;
     bool m_locked;
     float m_prev_dt;
     glm::vec3 m_gravity;
     const World &m_world;
+    Surface m_surface;
     
     float m_width, m_height;
     size_t m_rows, m_cols;
@@ -56,7 +55,7 @@ private:
     size_t m_num_points, m_num_indices;
     
     void upload();
-    void gen_indices();
+
     void copy_current_to_prev();
 
     void apply_plane_constraints();
