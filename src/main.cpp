@@ -46,6 +46,8 @@ size_t g_num_frames = 0;
 static const double update_interval = 1.0;
 const char *title_format = "Cloth, %f fps";
 
+static const float sphere_r_bias = 1e-2;
+
 void update_fps()
 {
     ++g_num_frames;
@@ -154,7 +156,7 @@ static void do_render(bool alt_color)
         Sphere *sp = *it;
         glPushMatrix();
         glTranslatef(sp->origin.x, sp->origin.y, sp->origin.z);
-        glutSolidSphere(sp->r, 20, 20);
+        glutSolidSphere(sp->r - sphere_r_bias, 20, 20);
         glPopMatrix();
     }
 
