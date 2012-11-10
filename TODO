@@ -13,10 +13,6 @@
 
 
 * Rendering
-** TODO Visualize planes
-*** Move out the "rectangular grid mesh" entity as a separate class
-*** Consult the "matrix to rotate one vector to another" paper
-
 ** TODO More fancy rendering options
 *** Calculate normals and texcoords for cloth
 	..but don't compute what isn't needed for the current rendering method.
