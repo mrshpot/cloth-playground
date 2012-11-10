@@ -78,6 +78,9 @@ Cloth::Cloth(float width, float height, size_t rows, size_t cols, const World &w
 
     memset(m_points, m_num_points * sizeof(m_points[0]), 0);
     memset(m_prev_points, m_num_points * sizeof(m_points[0]), 0);
+    
+    m_invmass = new float[m_num_points];
+    std::fill(m_invmass, m_invmass + m_num_points, 1.0f);
 }
 
 Cloth::~Cloth()
@@ -85,6 +88,7 @@ Cloth::~Cloth()
     delete[] m_points;
     delete[] m_prev_points;
     delete[] m_spring_phase_buf;
+    delete[] m_invmass;
 }
 
 void Cloth::lock()
@@ -125,6 +129,7 @@ void Cloth::step(float dt)
         for (size_t j = 0; j < m_cols; ++j)
         {
             size_t idx = i * m_cols + j;
+            if (m_invmass[idx] == 0.0f) continue;
             Point tmp = m_points[idx];
             Point &x = m_points[idx];
             Point &x_prev = m_prev_points[idx];
@@ -167,6 +172,7 @@ void Cloth::apply_plane_constraints()
     {
         for (size_t idx = 0; idx < m_num_points; ++idx)
         {
+            if (m_invmass[idx] == 0.0f) continue;
             Point &p = m_points[idx];
             Plane *pl = *it;
             float d = pl->equ(p.pos);
@@ -189,6 +195,7 @@ void Cloth::apply_sphere_constraints()
         
         for (size_t idx = 0; idx < m_num_points; ++idx)
         {
+            if (m_invmass[idx] == 0.0f) continue;
             Point &p = m_points[idx];
             float d = sp->equ(p.pos);
             if (d < 0)
@@ -201,14 +208,27 @@ void Cloth::apply_sphere_constraints()
     
 }
 
-static glm::vec3 solve_spring(const glm::vec3 &a, const glm::vec3 &b, float distance)
+static glm::vec3 solve_spring(const glm::vec3 &a, const glm::vec3 &b, float distance, float invmass_a, float invmass_b)
 {
+    float invmass_sum = invmass_a + invmass_b;
+    if (fabs(invmass_sum) < 1e-3)
+        return glm::vec3(0.0f);
+
+    static const float stiffness = 0.6f;
+    
     glm::vec3 ab = b - a;
     float l = sqrt(glm::dot(ab, ab));
     float dl = (l - distance);
-    // allow infinite compression
-    if (dl < 0.0f) dl = 0.0f;
-    return (0.5f * dl / l) * ab;
+    float delta;
+    if (l < 1e-2 || dl < 0.0f)
+    {
+        delta = 0.0f;
+    }
+    else
+    {
+        delta = (invmass_a * dl / (l * invmass_sum));
+    }
+    return stiffness * delta * ab;
 }
 
 void Cloth::apply_spring_constraints()
@@ -226,16 +246,20 @@ void Cloth::apply_spring_constraints()
                 glm::vec3 dx = glm::vec3(0.0f);
                 if (i > 0)
                     dx += solve_spring(p.pos, m_points[idx - m_cols].pos,
-                                       m_dist_to_bottom);
+                                       m_dist_to_bottom,
+                                       m_invmass[idx], m_invmass[idx - m_cols]);
                 if (j > 0) 
                     dx += solve_spring(p.pos, m_points[idx - 1].pos,
-                                       m_dist_to_left);
+                                       m_dist_to_left,
+                                       m_invmass[idx], m_invmass[idx - 1]);
                 if (i < (m_rows - 1))
                     dx += solve_spring(p.pos, m_points[idx + m_cols].pos,
-                                       m_dist_to_bottom);
+                                       m_dist_to_bottom,
+                                       m_invmass[idx], m_invmass[idx + m_cols]);
                 if (j < (m_cols - 1))
                     dx += solve_spring(p.pos, m_points[idx + 1].pos,
-                                       m_dist_to_left);
+                                       m_dist_to_left,
+                                       m_invmass[idx], m_invmass[idx + 1]);
                 
                 m_spring_phase_buf[idx].pos = p.pos + dx;
             }

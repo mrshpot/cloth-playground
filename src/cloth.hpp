@@ -30,7 +30,8 @@ public:
 
     void reset_velocity();
     
-    Point& at(int i, int j) { return m_points[i * m_cols + j]; }
+    glm::vec3& pos_at(int i, int j) { return m_points[i * m_cols + j].pos; }
+    float& invmass_at(int i, int j) { return m_invmass[i * m_cols + j]; }
     void draw();
 
     void step(float timestep);
@@ -42,6 +43,7 @@ public:
 
 private:
     Point *m_points, *m_prev_points, *m_spring_phase_buf;
+    float *m_invmass;
     bool m_locked;
     float m_prev_dt;
     glm::vec3 m_gravity;
