@@ -11,6 +11,7 @@
 #include <ctime>
 #include <cmath>
 
+#include <glm/gtc/type_ptr.hpp>
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -21,11 +22,14 @@
 #include "cloth.hpp"
 #include "world.hpp"
 #include "script.hpp"
+#include "surface.hpp"
+#include "math_utils.hpp"
 
 
 World *g_world = NULL;
 Cloth *g_cloth = NULL;
 Script *g_script = NULL;
+Surface *g_plane_surface = NULL;
 
 bool g_update = true;
 
@@ -154,6 +158,19 @@ static void do_render(bool alt_color)
         glPopMatrix();
     }
 
+    for (World::plane_array_t::const_iterator it = g_world->planes.begin();
+         it != g_world->planes.end(); ++it)
+    {
+        Plane *pl = *it;
+        glPushMatrix();
+        glm::vec3 offset = -pl->n * pl->d;
+        glTranslatef(offset.x, offset.y, offset.z);
+        glm::mat4 rot_matrix = gen_rotation_matrix(pl->n, glm::vec3(0.f, 1.f, 0.f));
+        glMultMatrixf(glm::value_ptr(rot_matrix));
+        g_plane_surface->draw();
+        glPopMatrix();
+    }
+
     if (!alt_color)
         glColor3f(0.4f, 0.7f, 0.8f);
     else
@@ -279,6 +296,14 @@ int main(int argc, char *argv[])
         }
         g_script->init();
     }
+
+    g_plane_surface = new Surface(2, 2);
+    // make a XZ-oriented plane spanning (-1, 0, -1) to (+1, 0, +1)
+    g_plane_surface->lock();
+    g_plane_surface->make_plane(glm::vec3(-1.f, 0.f, -1.f),
+                                glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 1.f),
+                                2.f, 2.f);
+    g_plane_surface->unlock();
 
     glutMainLoop();
     

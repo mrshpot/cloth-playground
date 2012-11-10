@@ -6,7 +6,7 @@ endif (PLATFORM_POSIX)
 configure_file(platform.hpp.in platform.hpp)
 include_directories("." "${CMAKE_CURRENT_BINARY_DIR}" "${GLM_INCLUDE_DIR}" "${GLUT_INCLUDE_DIR}" "${GLEW_INCLUDE_PATH}" "${LUA_INCLUDE_DIR}")
 add_executable(${TARGET}
-  main.cpp cloth.cpp surface.cpp
+  main.cpp cloth.cpp surface.cpp math_utils.cpp
   script.cpp script/lua_compat.cpp script/vec.cpp script/plane.cpp script/sphere.cpp script/collection.cpp
   w32_time.cpp posix_time.cpp)
 target_link_libraries(${TARGET} ${LIBS})
